@@ -19,7 +19,6 @@ const Column = ({
       e.dataTransfer.setData("cardId", card.id);
     }
   };
-
   const handleDragEnd = async (e: React.DragEvent<HTMLDivElement>) => {
     const cardId = e.dataTransfer.getData("cardId");
 
@@ -32,39 +31,40 @@ const Column = ({
     const before = element.dataset.before || "-1";
 
     if (before !== cardId) {
-      const originalCards = [...cards];
-      let copy = [...cards];
-
-      let cardToTransfer = copy.find((c) => c.id === cardId);
-      if (!cardToTransfer) return;
-      cardToTransfer = { ...cardToTransfer, column };
-
-      copy = copy.filter((c) => c.id !== cardId);
-
-      const moveToBack = before === "-1";
-
-      if (moveToBack) {
-        copy.push(cardToTransfer);
-      } else {
-        const insertAtIndex = copy.findIndex((el) => el.id === before);
-        if (insertAtIndex === undefined) return;
-
-        copy.splice(insertAtIndex, 0, cardToTransfer);
-      }
-
-      setCards(copy);
-
       try {
-        await fetch(`${import.meta.env.VITE_API}/${cardId}`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ column: column }),
-        });
+        await fetch(
+          `https://kamid.pockethost.io/api/collections/TOdos/records/${cardId}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ column: column }),
+          }
+        );
+
+        let copy = [...cards];
+
+        let cardToTransfer = copy.find((c) => c.id === cardId);
+        if (!cardToTransfer) return;
+        cardToTransfer = { ...cardToTransfer, column };
+
+        copy = copy.filter((c) => c.id !== cardId);
+
+        const moveToBack = before === "-1";
+
+        if (moveToBack) {
+          copy.push(cardToTransfer);
+        } else {
+          const insertAtIndex = copy.findIndex((el) => el.id === before);
+          if (insertAtIndex === undefined) return;
+
+          copy.splice(insertAtIndex, 0, cardToTransfer);
+        }
+
+        setCards(copy);
       } catch (error) {
         console.error("Error updating column:", error);
-        setCards(originalCards);
       }
     }
   };
@@ -161,41 +161,6 @@ export default Column;
 const AddCard = ({ column, setCards }: AddCardProps) => {
   const [text, setText] = useState("");
   const [adding, setAdding] = useState(false);
-  // normal
-  // const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   if (!text.trim().length) return;
-
-  //   const newCard = {
-  //     column,
-  //     title: text.trim(),
-  //   };
-
-  //   try {
-  //     const response = await fetch(
-  //       "https://kamid.pockethost.io/api/collections/TOdos/records",
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify(newCard),
-  //       }
-  //     );
-
-  //     if (!response.ok) {
-  //       console.log("Failed to add card to the database.");
-  //     }
-  //     const createdCard = await response.json();
-  //     setCards((prevCards) => [...prevCards, createdCard]);
-  //     setAdding(false);
-  //     setText("");
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //   }
-  // };
-
-  // ok
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -211,13 +176,16 @@ const AddCard = ({ column, setCards }: AddCardProps) => {
     setText("");
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newCard),
-      });
+      const response = await fetch(
+        `https://kamid.pockethost.io/api/collections/TOdos/records`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newCard),
+        }
+      );
       if (!response.ok) {
         console.log("Failed to add card to the database.");
       }

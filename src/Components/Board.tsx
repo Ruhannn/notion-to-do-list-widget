@@ -7,10 +7,12 @@ import axios from "axios";
 
 const Board = () => {
   const [cards, setCards] = useState<CardType[]>([]);
-  axios.get(import.meta.env.VITE_API).then((response) => {
-    const data = response.data.items;
-    setCards(data);
-  });
+  axios
+    .get("https://kamid.pockethost.io/api/collections/TOdos/records")
+    .then((response) => {
+      const data = response.data.items;
+      setCards(data);
+    });
 
   return (
     <div className="flex w-full h-full gap-3 p-12 overflow-x-scroll">
@@ -67,10 +69,12 @@ const BurnBarrel = ({
 
   const handleDragEnd = async (e: React.DragEvent<HTMLDivElement>) => {
     const cardId = e.dataTransfer.getData("cardId");
-    const updatedCards = cards.filter((c) => c.id !== cardId); 
+    const updatedCards = cards.filter((c) => c.id !== cardId);
 
     try {
-      await axios.delete(`${import.meta.env.VITE_API}/${cardId}`);
+      await axios.delete(
+        `https://kamid.pockethost.io/api/collections/TOdos/records/${cardId}`
+      );
       setCards(updatedCards);
     } catch (error) {
       console.error("Error deleting card:", error);
