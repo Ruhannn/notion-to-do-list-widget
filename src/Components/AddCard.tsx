@@ -15,6 +15,7 @@ export const AddCard = ({ column }: AddCardProps) => {
       title: text.trim(),
     };
     addNewCard(newCard);
+
     setAdding(false);
   };
 

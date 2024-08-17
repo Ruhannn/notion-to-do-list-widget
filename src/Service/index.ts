@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { Card } from "./../types";
+import { toast } from "sonner";
 
 const getCard = async () => {
   const { data } = await axios.get(import.meta.env.VITE_API);
@@ -30,6 +31,7 @@ export const useCards = () => {
   const { data, error, isLoading, refetch } = useQuery({
     queryKey: ["cards"],
     queryFn: getCard,
+    refetchInterval: 600000,
   });
   // for add data
   const { mutate: addNewCard } = useMutation({
@@ -43,8 +45,9 @@ export const useCards = () => {
       ]);
       return { previousCards };
     },
-    onError: (_, __, context) => {
+    onError: (err, __, context) => {
       qc.setQueryData(["cards"], context?.previousCards);
+      toast.error(`${err.message} :C`);
     },
     onSuccess: () => {
       console.log("added");
@@ -64,11 +67,12 @@ export const useCards = () => {
       );
       return { previousCards };
     },
-    onError: (_, __, context) => {
+    onError: (err, __, context) => {
       qc.setQueryData(["cards"], context?.previousCards);
+      toast.error(`${err.message} :C`);
     },
     onSuccess: () => {
-      console.log("added");
+      console.log("dlt");
     },
     onSettled: () => {
       qc.invalidateQueries({ queryKey: ["cards"] });
@@ -90,10 +94,9 @@ export const useCards = () => {
 
       return { previousCards };
     },
-    onError: (_, __, context) => {
-      if (context?.previousCards) {
-        qc.setQueryData(["cards"], context.previousCards);
-      }
+    onError: (err, __, context) => {
+      qc.setQueryData(["cards"], context?.previousCards);
+      toast.error(`${err.message} :C`);
     },
     onSuccess: () => {
       console.log("card updateded");

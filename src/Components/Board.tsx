@@ -1,18 +1,27 @@
+import { motion } from "framer-motion";
 import { useCards } from "../Service";
 import { BurnBarrel } from "./BurnBarrel";
 import { Column } from "./Column";
+import Loading from "./Loading";
+import Error from "./Error";
 
 const Board = () => {
-  // TODO: add loading loacstoge + api
+  // TODO: loacstoge + api
   const { data, error, isLoading } = useCards();
   if (isLoading) {
-    return <>loading</>;
+    return <Loading />;
   }
   if (error) {
-    return <>errr</>;
+    return <Error err={error.message} />;
   }
+
   return (
-    <div className="flex w-full h-full gap-3 p-12 overflow-x-scroll">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="flex w-full h-full gap-3 p-12 overflow-x-scroll"
+    >
       <Column
         title="Backlog"
         column="backlog"
@@ -38,7 +47,7 @@ const Board = () => {
         cards={data}
       />
       <BurnBarrel />
-    </div>
+    </motion.div>
   );
 };
 export default Board;
