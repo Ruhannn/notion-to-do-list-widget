@@ -6,6 +6,9 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        dmSans: ["DM Sans", "sans-serif"]
+      },
       keyframes: {
         boo: {
           '0%': {

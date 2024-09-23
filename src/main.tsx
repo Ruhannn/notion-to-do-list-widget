@@ -10,6 +10,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={qc}>
       <Toaster
+        duration={1500}
         toastOptions={{
           classNames: {
             toast: "border-neutral-700 bg-neutral-800 p-3 border",
